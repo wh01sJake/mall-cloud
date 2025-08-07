@@ -159,8 +159,8 @@ npm run dev
 
 ## 🌐 Live Demo
 
-- **Customer UI:** [Live Demo](https://vape-mall-customer-jzxde4zc7-jakes-projects-c18e91ac.vercel.app)
-- **Admin UI:** [Admin Panel](https://vape-mall-admin-17ry7aa1p-jakes-projects-c18e91ac.vercel.app)
+- **Customer UI:** [Live Demo](https://vape-mall-customer.vercel.app)
+- **Admin UI:** [Admin Panel](https://vape-mall-admin.vercel.app)
 
 ## 📚 Documentation
 
