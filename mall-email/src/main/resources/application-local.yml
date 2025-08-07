@@ -1,0 +1,61 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: mall-email
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://vapemall-do-user-24255717-0.f.db.ondigitalocean.com:25060/vapemall?useSSL=true&requireSSL=true&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: doadmin
+    password: ${DATABASE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+
+# MyBatis-Plus Configuration
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.intelijake.mall.pojo
+
+# SendGrid Configuration
+sendgrid:
+  api-key: ${SENDGRID_API_KEY:your-sendgrid-api-key-here}
+  from-email: ${FROM_EMAIL:jake@intelijake.com}
+  from-name: ${FROM_NAME:InteliJake}
+
+# Email Configuration
+email:
+  templates:
+    order-confirmation: order-confirmation
+    welcome: welcome
+    admin-notification: admin-notification
+  admin-email: ${ADMIN_EMAIL:jake@intelijake.com}
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+# Logging
+logging:
+  level:
+    com.intelijake.mall: DEBUG
+    com.sendgrid: DEBUG

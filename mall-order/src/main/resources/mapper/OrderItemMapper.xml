@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intelijake.mall.order.mapper.OrderItemMapper">
+
+    <!-- Base result map for OrderItem -->
+    <resultMap id="BaseResultMap" type="com.intelijake.mall.pojo.OrderItem">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="order_no" property="orderNo" />
+        <result column="product_id" property="productId" />
+        <result column="product_name" property="productName" />
+        <result column="product_image" property="productImage" />
+        <result column="current_unit_price" property="currentUnitPrice" />
+        <result column="quantity" property="quantity" />
+        <result column="total_price" property="totalPrice" />
+        <result column="status" property="status" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- Base column list -->
+    <sql id="Base_Column_List">
+        id, user_id, order_no, product_id, product_name, product_image,
+        current_unit_price, quantity, total_price, status, is_deleted,
+        create_time, update_time
+    </sql>
+
+    <!-- Get order items by order number -->
+    <select id="selectByOrderNo" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM order_item
+        WHERE order_no = #{orderNo}
+        AND is_deleted = 0
+        ORDER BY create_time ASC
+    </select>
+
+    <!-- Get order items by user ID -->
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM order_item
+        WHERE user_id = #{userId}
+        AND is_deleted = 0
+        <if test="orderNo != null">
+            AND order_no = #{orderNo}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- Get order item statistics -->
+    <select id="getOrderItemStats" resultType="java.util.Map">
+        SELECT
+            COUNT(*) as totalItems,
+            SUM(quantity) as totalQuantity,
+            SUM(total_price) as totalAmount,
+            COUNT(DISTINCT order_no) as totalOrders,
+            COUNT(DISTINCT product_id) as uniqueProducts
+        FROM order_item
+        WHERE is_deleted = 0
+        <if test="userId != null">
+            AND user_id = #{userId}
+        </if>
+        <if test="startDate != null">
+            AND create_time >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND create_time &lt;= #{endDate}
+        </if>
+    </select>
+
+    <!-- Batch insert order items -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO order_item (
+            user_id, order_no, product_id, product_name, product_image,
+            current_unit_price, quantity, total_price, status, create_time, update_time
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.userId}, #{item.orderNo}, #{item.productId},
+                #{item.productName}, #{item.productImage}, #{item.currentUnitPrice},
+                #{item.quantity}, #{item.totalPrice}, #{item.status},
+                NOW(), NOW()
+            )
+        </foreach>
+    </insert>
+
+</mapper>

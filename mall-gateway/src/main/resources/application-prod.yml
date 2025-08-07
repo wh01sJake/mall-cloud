@@ -1,0 +1,217 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: gateway
+  main:
+    web-application-type: reactive
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 10000
+        response-timeout: 60s
+      routes:
+        # Admin Service Routes (API prefix for frontend)
+        - id: api-admin-service
+          uri: ${ADMIN_SERVICE_URL:https://vapemall-admin-b7ef24ef72fa.herokuapp.com}
+          predicates:
+            - Path=/api/admin/**
+          filters:
+            - RewritePath=/api/admin/(?<segment>.*), /admin/$\{segment}
+            - name: JwtAuthentication
+              args:
+                excludePaths: /login,/register
+
+        # Admin Service Routes (direct access)
+        - id: admin-service
+          uri: ${ADMIN_SERVICE_URL:https://vapemall-admin-b7ef24ef72fa.herokuapp.com}
+          predicates:
+            - Path=/admin/**
+          filters:
+            - name: JwtAuthentication
+              args:
+                excludePaths: /login,/register
+
+        # Product Service Routes
+        - id: api-product-service
+          uri: ${PRODUCT_SERVICE_URL:https://vapemall-product-91de769fefad.herokuapp.com}
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+            - name: JwtAuthentication
+              args:
+                excludePaths: /list,/category/list,/category/listAll,/category/selectTopCategoryList,/selectById,/selectByCategoryId,/customer/list
+
+        # Product Service Routes (direct access)
+        - id: product-service
+          uri: ${PRODUCT_SERVICE_URL:https://vapemall-product-91de769fefad.herokuapp.com}
+          predicates:
+            - Path=/product/**
+          filters:
+            - JwtAuthentication
+
+        # Upload Routes (Product Service)
+        - id: api-upload-service
+          uri: ${PRODUCT_SERVICE_URL:https://vapemall-product-91de769fefad.herokuapp.com}
+          predicates:
+            - Path=/api/upload/**
+          filters:
+            - RewritePath=/api/upload/(?<segment>.*), /upload/$\{segment}
+            - JwtAuthentication
+
+        # Upload Routes (API prefix for frontend)
+        - id: api-upload-service
+          uri: ${PRODUCT_SERVICE_URL:https://vapemall-product-91de769fefad.herokuapp.com}
+          predicates:
+            - Path=/api/upload/**
+          filters:
+            - RewritePath=/api/upload/(?<segment>.*), /upload/$\{segment}
+            - JwtAuthentication
+
+        # Upload Routes (direct access)
+        - id: upload-service
+          uri: ${PRODUCT_SERVICE_URL:https://vapemall-product-91de769fefad.herokuapp.com}
+          predicates:
+            - Path=/upload/**
+          filters:
+            - JwtAuthentication
+
+        # Customer Service Routes (API prefix for frontend)
+        - id: api-customer-service
+          uri: ${CUSTOMER_SERVICE_URL:https://vapemall-customer-815639b8614d.herokuapp.com}
+          predicates:
+            - Path=/api/customer/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+            - name: JwtAuthentication
+              args:
+                excludePaths: /login,/register
+
+        # Customer Service Routes (direct access)
+        - id: customer-service
+          uri: ${CUSTOMER_SERVICE_URL:https://vapemall-customer-815639b8614d.herokuapp.com}
+          predicates:
+            - Path=/customer/**
+          filters:
+            - JwtAuthentication
+
+        # Order Service Routes (API prefix for frontend)
+        - id: api-order-service
+          uri: ${ORDER_SERVICE_URL:https://vapemall-order-cfee0d827679.herokuapp.com}
+          predicates:
+            - Path=/api/order/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+            - JwtAuthentication
+
+        # Order Service Routes (direct access)
+        - id: order-service
+          uri: ${ORDER_SERVICE_URL:https://vapemall-order-cfee0d827679.herokuapp.com}
+          predicates:
+            - Path=/order/**
+          filters:
+            - JwtAuthentication
+
+        # Statistics Service Routes (API prefix for frontend)
+        - id: api-statistics-service
+          uri: ${STATISTICS_SERVICE_URL:https://vapemall-statistics-91f40db2f511.herokuapp.com}
+          predicates:
+            - Path=/api/statistics/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+            - JwtAuthentication
+
+        # Statistics Service Routes (direct access)
+        - id: statistics-service
+          uri: ${STATISTICS_SERVICE_URL:https://vapemall-statistics-91f40db2f511.herokuapp.com}
+          predicates:
+            - Path=/statistics/**
+          filters:
+            - JwtAuthentication
+
+        # Email Service Routes (API prefix for frontend)
+        - id: api-email-service
+          uri: ${EMAIL_SERVICE_URL:https://vapemall-email-0d4179aadc24.herokuapp.com}
+          predicates:
+            - Path=/api/email/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+            - JwtAuthentication
+
+        # Email Service Routes (direct access)
+        - id: email-service
+          uri: ${EMAIL_SERVICE_URL:https://vapemall-email-0d4179aadc24.herokuapp.com}
+          predicates:
+            - Path=/email/**
+          filters:
+            - JwtAuthentication
+
+      # Global CORS Configuration
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns:
+              - "https://*.vercel.app"
+              - "https://vercel.app"
+              - "http://localhost:*"
+            allowedOrigins:
+              - ${ADMIN_UI_URL:https://vape-mall-admin.vercel.app}
+              - ${CUSTOMER_UI_URL:https://vape-mall-customer-jzxde4zc7-jakes-projects-c18e91ac.vercel.app}
+              - "https://vape-mall-customer-jzxde4zc7-jakes-projects-c18e91ac.vercel.app"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - PATCH
+              - HEAD
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+            maxAge: 3600
+
+      # Default filters
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+
+  # Redis configuration
+  data:
+    redis:
+      url: ${REDIS_URL:redis://127.0.0.1:6379}
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+aws:
+  s3:
+    bucket-name: ${S3_BUCKET_NAME:jake-mall-bucket}
+    region: ${S3_REGION:eu-west-1}
+    access-key: ${AWS_ACCESS_KEY}
+    secret-key: ${AWS_SECRET_KEY}
+
+jwt:
+  secret: ${JWT_SECRET:your-super-secret-jwt-key}
+  expiration: ${JWT_EXPIRATION:86400}
+
+logging:
+  level:
+    com.intelijake.mall: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized

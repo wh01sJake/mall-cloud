@@ -1,0 +1,84 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: customer
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL_AUTO:update}
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: ${HIBERNATE_DIALECT:org.hibernate.dialect.MySQL8Dialect}
+        format_sql: false
+
+  data:
+    redis:
+      url: ${REDIS_URL:redis://127.0.0.1:6379}
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  type-aliases-package: com.intelijake.mall.pojo
+  mapper-locations: classpath*:mapper/*.xml
+  global-config:
+    db-config:
+      logic-delete-field: is_deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      id-type: auto
+
+# AWS Configuration
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY_ID}
+      secretKey: ${AWS_SECRET_ACCESS_KEY}
+    region: ${AWS_REGION:eu-west-1}
+    s3:
+      bucket: ${AWS_S3_BUCKET:jake-mall-bucket}
+
+aws:
+  s3:
+    bucket-name: ${S3_BUCKET_NAME}
+    region: ${S3_REGION:eu-west-1}
+    access-key: ${AWS_ACCESS_KEY}
+    secret-key: ${AWS_SECRET_KEY}
+
+jwt:
+  secret: ${JWT_SECRET:your-super-secret-jwt-key-for-customer-service}
+  expiration: ${JWT_EXPIRATION:86400}
+
+
+
+logging:
+  level:
+    com.intelijake.mall: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Email Service Configuration
+email:
+  service:
+    url: ${EMAIL_SERVICE_URL:https://vapemall-email-0d4179aadc24.herokuapp.com}

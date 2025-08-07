@@ -1,0 +1,85 @@
+server:
+  port: ${PORT:8086}
+
+spring:
+  application:
+    name: statistics
+
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+  # Temporarily disable Redis data configuration due to SSL connection issues
+  # data:
+  #   redis:
+  #     url: ${REDIS_URL:redis://127.0.0.1:6379}
+  #     timeout: 2000ms
+  #     ssl:
+  #       enabled: true
+  #     lettuce:
+  #       pool:
+  #         max-active: 8
+  #         max-idle: 8
+  #         min-idle: 0
+
+  # Temporarily disable Redis cache due to SSL connection issues
+  # cache:
+  #   type: redis
+  #   redis:
+  #     time-to-live: 900000  # 15 minutes TTL for statistics
+  #     cache-null-values: false
+
+# MyBatis Plus Configuration
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+  type-aliases-package: com.intelijake.mall.statistics.pojo
+  global-config:
+    db-config:
+      logic-delete-field: isDeleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      id-type: auto
+  mapper-locations: classpath*:mapper/*.xml
+
+# AWS S3 Configuration
+aws:
+  s3:
+    bucket-name: ${S3_BUCKET_NAME:jake-mall-bucket}
+    region: ${S3_REGION:eu-west-1}
+    access-key: ${AWS_ACCESS_KEY}
+    secret-key: ${AWS_SECRET_KEY}
+
+# Logging Configuration
+logging:
+  level:
+    com.intelijake.mall: INFO
+    org.springframework.cache: INFO
+    org.springframework.data.redis: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always

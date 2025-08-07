@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intelijake.mall.product.mapper.ProductMapper">
+
+    <select id="list" resultType="com.intelijake.mall.product.pojo.vo.ProductVO">
+        SELECT p.*,c.`name` AS categoryName
+        FROM product AS p INNER JOIN
+             product_category AS c ON
+                 p.category_id = c.id
+        <where>
+            <if test="productQuery.name!=null and productQuery.name!=''">
+                AND p.name LIKE concat ('%',#{productQuery.name},'%')
+            </if>
+            <if test="productQuery.categoryId!=null">
+                AND p.category_id = #{productQuery.categoryId}
+            </if>
+            AND p.is_deleted = 0
+        </where>
+    </select>
+</mapper>

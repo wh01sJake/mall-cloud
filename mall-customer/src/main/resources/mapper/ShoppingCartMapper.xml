@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intelijake.mall.customer.mapper.ShoppingCartMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.intelijake.mall.pojo.ShoppingCart">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="product_id" property="productId" />
+        <result column="quantity" property="quantity" />
+        <result column="is_checked" property="isChecked" />
+        <result column="status" property="status" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, product_id, quantity, is_checked, status, is_deleted, create_time, update_time
+    </sql>
+
+    <!-- CartVO result map for shopping cart with product details -->
+    <resultMap id="cartVOMap" type="com.intelijake.mall.customer.pojo.vo.CartVO">
+        <id column="id" property="id"/>
+        <result column="user_id" property="customerId"/>
+        <result column="product_id" property="productId"/>
+        <result column="quantity" property="quantity"/>
+        <result column="is_checked" property="isChecked"/>
+        <result column="product_name" property="productName"/>
+        <result column="product_subtitle" property="productSubtitle"/>
+        <result column="product_main_image" property="productMainImage"/>
+        <result column="product_price" property="productPrice"/>
+        <result column="product_status" property="productStatus"/>
+        <result column="product_stock" property="productStock"/>
+        <result column="total_price" property="totalPrice"/>
+    </resultMap>
+
+    <!-- Get shopping cart items with product details -->
+    <select id="getCartItemsWithProductDetails" resultMap="cartVOMap">
+        SELECT
+            c.id,
+            c.user_id,
+            c.product_id,
+            c.quantity,
+            c.is_checked,
+            p.name AS product_name,
+            p.subtitle AS product_subtitle,
+            p.main_image AS product_main_image,
+            p.price AS product_price,
+            p.status AS product_status,
+            p.stock AS product_stock,
+            (c.quantity * p.price) AS total_price
+        FROM shopping_cart c
+        INNER JOIN product p ON c.product_id = p.id
+        WHERE c.user_id = #{customerId}
+        AND c.status = 1
+        AND c.is_deleted = 0
+        AND p.is_deleted = 0
+        <if test="isChecked != null">
+            AND c.is_checked = #{isChecked}
+        </if>
+        ORDER BY c.create_time DESC
+    </select>
+
+    <!-- Get shopping cart items with product details (simple version for testing) -->
+    <select id="getCartItemsWithProductDetailsSimple" resultMap="cartVOMap">
+        SELECT
+            c.id,
+            c.user_id,
+            c.product_id,
+            c.quantity,
+            c.is_checked,
+            p.name AS product_name,
+            p.subtitle AS product_subtitle,
+            p.main_image AS product_main_image,
+            p.price AS product_price,
+            p.status AS product_status,
+            p.stock AS product_stock,
+            (c.quantity * p.price) AS total_price
+        FROM shopping_cart c
+        INNER JOIN product p ON c.product_id = p.id
+        WHERE c.user_id = #{customerId}
+        AND c.status = 1
+        AND c.is_deleted = 0
+        AND p.is_deleted = 0
+        <if test="isChecked != null">
+            AND c.is_checked = #{isChecked}
+        </if>
+        ORDER BY c.create_time DESC
+    </select>
+
+    <!-- Get cart items by IDs with product details -->
+    <select id="getCartItemsByIds" resultMap="cartVOMap">
+        SELECT
+            c.id,
+            c.user_id,
+            c.product_id,
+            c.quantity,
+            c.is_checked,
+            p.name AS product_name,
+            p.subtitle AS product_subtitle,
+            p.main_image AS product_main_image,
+            p.price AS product_price,
+            p.status AS product_status,
+            p.stock AS product_stock,
+            (c.quantity * p.price) AS total_price
+        FROM shopping_cart c
+        INNER JOIN product p ON c.product_id = p.id
+        WHERE c.id IN
+        <foreach collection="cartIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND c.status = 1
+        AND c.is_deleted = 0
+        AND p.is_deleted = 0
+        ORDER BY c.create_time DESC
+    </select>
+
+    <!-- Update shopping cart item quantity -->
+    <update id="updateQuantity">
+        UPDATE shopping_cart
+        SET quantity = #{quantity}, update_time = NOW()
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
+
+</mapper>

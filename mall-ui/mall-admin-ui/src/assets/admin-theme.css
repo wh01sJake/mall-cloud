@@ -1,0 +1,310 @@
+/* Professional Admin Theme Overrides */
+
+/* Global Element Plus Overrides */
+.el-message {
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.el-message--success {
+  background: #f0f9ff !important;
+  border-color: #0ea5e9 !important;
+  color: #0c4a6e !important;
+}
+
+.el-message--error {
+  background: #fef2f2 !important;
+  border-color: #ef4444 !important;
+  color: #991b1b !important;
+}
+
+.el-message--warning {
+  background: #fffbeb !important;
+  border-color: #f59e0b !important;
+  color: #92400e !important;
+}
+
+/* Upload Component Styling */
+.el-upload {
+  border-radius: 8px !important;
+}
+
+.el-upload-dragger {
+  border-radius: 8px !important;
+  border: 2px dashed #d1d5db !important;
+  background: #f9fafb !important;
+  transition: all 0.3s ease !important;
+}
+
+.el-upload-dragger:hover {
+  border-color: #667eea !important;
+  background: #f0f4ff !important;
+}
+
+/* Date Picker Styling */
+.el-date-editor {
+  border-radius: 8px !important;
+}
+
+.el-picker-panel {
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Switch Component */
+.el-switch.is-checked .el-switch__core {
+  background-color: #667eea !important;
+  border-color: #667eea !important;
+}
+
+/* Tag Component */
+.el-tag {
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+}
+
+.el-tag--primary {
+  background: #eff6ff !important;
+  border-color: #3b82f6 !important;
+  color: #1d4ed8 !important;
+}
+
+.el-tag--success {
+  background: #f0fdf4 !important;
+  border-color: #22c55e !important;
+  color: #15803d !important;
+}
+
+.el-tag--warning {
+  background: #fffbeb !important;
+  border-color: #f59e0b !important;
+  color: #d97706 !important;
+}
+
+.el-tag--danger {
+  background: #fef2f2 !important;
+  border-color: #ef4444 !important;
+  color: #dc2626 !important;
+}
+
+/* Tooltip Styling */
+.el-tooltip__popper {
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Progress Bar */
+.el-progress-bar__outer {
+  border-radius: 8px !important;
+}
+
+.el-progress-bar__inner {
+  border-radius: 8px !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+/* Steps Component */
+.el-steps .el-step__head.is-process {
+  color: #667eea !important;
+  border-color: #667eea !important;
+}
+
+.el-steps .el-step__head.is-finish {
+  color: #22c55e !important;
+  border-color: #22c55e !important;
+}
+
+/* Breadcrumb */
+.el-breadcrumb__item .el-breadcrumb__inner {
+  color: #6b7280 !important;
+  font-weight: 500 !important;
+}
+
+.el-breadcrumb__item:last-child .el-breadcrumb__inner {
+  color: #1f2937 !important;
+  font-weight: 600 !important;
+}
+
+/* Alert Component */
+.el-alert {
+  border-radius: 8px !important;
+  border: none !important;
+  padding: 16px !important;
+}
+
+.el-alert--success {
+  background: #f0fdf4 !important;
+  color: #15803d !important;
+}
+
+.el-alert--warning {
+  background: #fffbeb !important;
+  color: #d97706 !important;
+}
+
+.el-alert--error {
+  background: #fef2f2 !important;
+  color: #dc2626 !important;
+}
+
+.el-alert--info {
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+/* Loading Spinner */
+.el-loading-spinner .circular {
+  stroke: #667eea !important;
+}
+
+/* Drawer Component */
+.el-drawer {
+  border-radius: 16px 0 0 16px !important;
+}
+
+.el-drawer__header {
+  padding: 24px !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  margin-bottom: 0 !important;
+}
+
+.el-drawer__body {
+  padding: 24px !important;
+}
+
+/* Collapse Component */
+.el-collapse {
+  border-radius: 8px !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.el-collapse-item__header {
+  background: #f9fafb !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+}
+
+.el-collapse-item__content {
+  padding: 16px !important;
+}
+
+/* Timeline Component */
+.el-timeline-item__timestamp {
+  color: #6b7280 !important;
+  font-weight: 500 !important;
+}
+
+/* Avatar Group */
+.el-avatar-group .el-avatar {
+  border: 2px solid #ffffff !important;
+  margin-left: -8px !important;
+}
+
+/* Professional Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Custom Professional Classes */
+.admin-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.admin-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.admin-card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.admin-card-body {
+  padding: 24px;
+}
+
+.stats-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #ffffff;
+  border: none;
+}
+
+.stats-card .stats-number {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.stats-card .stats-label {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.action-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.action-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.danger-button {
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.danger-button:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+/* Professional Form Layout */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.form-section {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 24px;
+}
+
+.form-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e7eb;
+}

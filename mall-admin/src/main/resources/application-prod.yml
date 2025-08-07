@@ -1,0 +1,72 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+  application:
+    name: admin
+  datasource:
+    url: ${DATABASE_URL}
+    driver-class-name: ${DB_DRIVER:com.mysql.cj.jdbc.Driver}
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL_AUTO:update}
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: ${HIBERNATE_DIALECT:org.hibernate.dialect.MySQL8Dialect}
+        format_sql: false
+
+  # Redis configuration
+  data:
+    redis:
+      url: ${REDIS_URL:redis://127.0.0.1:6379}
+      timeout: 2000ms
+      ssl:
+        enabled: true
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+  # Cache configuration
+  cache:
+    type: redis
+    redis:
+      time-to-live: 1800000  # 30 minutes
+      cache-null-values: true
+      key-prefix: "admin:"
+
+aws:
+  s3:
+    bucket-name: ${S3_BUCKET_NAME:jake-mall-bucket}
+    region: ${S3_REGION:eu-west-1}
+    access-key: ${AWS_ACCESS_KEY}
+    secret-key: ${AWS_SECRET_KEY}
+
+jwt:
+  secret: ${JWT_SECRET:your-super-secret-jwt-key}
+  expiration: ${JWT_EXPIRATION:86400}
+
+logging:
+  level:
+    com.intelijake.mall: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized

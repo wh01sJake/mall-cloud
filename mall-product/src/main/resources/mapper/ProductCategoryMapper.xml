@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intelijake.mall.product.mapper.ProductCategoryMapper">
+
+    <resultMap id="categoryVOMap" type="com.intelijake.mall.product.pojo.vo.ProductCategoryVO">
+        <id column="parentId" property="id"/>
+        <result column="parentName" property="name"/>
+        <collection property="childList" ofType="com.intelijake.mall.product.pojo.vo.ProductCategoryVO">
+            <id column="id" property="id"/>
+            <result column="parentId" property="parentId"/>
+            <result column="name" property="name"/>
+        </collection>
+    </resultMap>
+
+    <select id="listAll" resultMap="categoryVOMap">
+        SELECT
+            p.id AS parentId,
+            p.name AS parentName,
+            c.id AS id,
+            c.parent_id AS parentId,
+            c.name AS name
+        FROM product_category p
+        LEFT JOIN product_category c ON p.id = c.parent_id
+        WHERE p.parent_id = 0
+        AND p.status = 1
+        AND p.is_deleted = 0
+        AND (c.status = 1 OR c.id IS NULL)
+        AND (c.is_deleted = 0 OR c.id IS NULL)
+        ORDER BY p.id ASC, c.id ASC
+    </select>
+
+</mapper>

@@ -1,0 +1,56 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/mall?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC
+    username: root
+    password: 1234
+
+  cloud:
+    nacos:
+      server-addr: localhost:8848
+      discovery:
+        ip: 127.0.0.1
+        prefer-ip-address: true
+  application:
+    name: statistics-service
+
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      database: 2
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 900000  # 15 minutes TTL for statistics
+      cache-null-values: false
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-aliases-package: com.intelijake.mall.pojo
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  mapper-locations: classpath*:mapper/*.xml
+
+server:
+  port: 8086
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY_ID}
+      secretKey: ${AWS_SECRET_ACCESS_KEY}
+    region: ${AWS_REGION:eu-west-1}
+    s3:
+      bucket: ${AWS_S3_BUCKET:jake-mall-bucket}

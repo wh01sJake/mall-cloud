@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intelijake.mall.order.mapper.CustomerOrderMapper">
+
+    <!-- Base result map for CustomerOrder -->
+    <resultMap id="BaseResultMap" type="com.intelijake.mall.pojo.CustomerOrder">
+        <id column="order_no" property="orderNo" />
+        <result column="user_id" property="userId" />
+        <result column="shipping_id" property="shippingId" />
+        <result column="payment_amount" property="paymentAmount" />
+        <result column="payment_type" property="paymentType" />
+        <result column="postage_fee" property="postageFee" />
+        <result column="payment_time" property="paymentTime" />
+        <result column="shipping_time" property="shippingTime" />
+        <result column="end_time" property="endTime" />
+        <result column="close_time" property="closeTime" />
+        <result column="status" property="status" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <!-- Base column list -->
+    <sql id="Base_Column_List">
+        order_no, user_id, shipping_id, payment_amount, payment_type, postage_fee,
+        payment_time, shipping_time, end_time, close_time, status, is_deleted,
+        create_time, update_time
+    </sql>
+
+    <!-- Get orders by user ID with pagination support -->
+    <select id="selectOrdersByUserId" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List" />
+        FROM customer_order
+        WHERE user_id = #{userId}
+        AND is_deleted = 0
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- Get order statistics by user -->
+    <select id="getOrderStatsByUserId" resultType="java.util.Map">
+        SELECT
+            COUNT(*) as totalOrders,
+            COUNT(CASE WHEN status = 1 THEN 1 END) as unpaidOrders,
+            COUNT(CASE WHEN status = 2 THEN 1 END) as paidOrders,
+            COUNT(CASE WHEN status = 3 THEN 1 END) as shippedOrders,
+            COUNT(CASE WHEN status = 4 THEN 1 END) as completedOrders,
+            COUNT(CASE WHEN status = 0 THEN 1 END) as cancelledOrders,
+            COALESCE(SUM(CASE WHEN status >= 2 THEN payment_amount ELSE 0 END), 0) as totalAmount
+        FROM customer_order
+        WHERE user_id = #{userId}
+        AND is_deleted = 0
+    </select>
+
+    <!-- Update order status with optimistic locking -->
+    <update id="updateOrderStatus">
+        UPDATE customer_order
+        SET status = #{newStatus},
+            update_time = NOW()
+            <if test="paymentTime != null">
+                , payment_time = #{paymentTime}
+            </if>
+            <if test="shippingTime != null">
+                , shipping_time = #{shippingTime}
+            </if>
+            <if test="endTime != null">
+                , end_time = #{endTime}
+            </if>
+            <if test="closeTime != null">
+                , close_time = #{closeTime}
+            </if>
+        WHERE order_no = #{orderNo}
+        AND status = #{currentStatus}
+        AND is_deleted = 0
+    </update>
+
+</mapper>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.intelijake.mall.statistics.mapper.StatisticsMapper">
+
+    <!-- Dashboard Statistics Queries -->
+
+    <!-- Get total count of all orders -->
+    <select id="getTotalOrderCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM customer_order
+        WHERE is_deleted = 0
+    </select>
+
+    <!-- Get total revenue from all completed orders (status 4 = Completed) -->
+    <select id="getTotalRevenue" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(payment_amount), 0)
+        FROM customer_order
+        WHERE status = 4
+          AND is_deleted = 0
+    </select>
+
+    <!-- Get count of orders with pending status (status 1 = Unpaid) -->
+    <select id="getPendingOrderCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM customer_order
+        WHERE status = 1
+          AND is_deleted = 0
+    </select>
+
+    <!-- Get count of orders with completed status (status 4 = Completed) -->
+    <select id="getCompletedOrderCount" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM customer_order
+        WHERE status = 4
+          AND is_deleted = 0
+    </select>
+
+    <!-- Order Status Distribution Query -->
+    <select id="getOrderStatusDistribution" resultType="com.intelijake.mall.statistics.pojo.dto.StatusCountVO">
+        SELECT 
+            status,
+            CASE 
+                WHEN status = 0 THEN 'Cancelled'
+                WHEN status = 1 THEN 'Unpaid'
+                WHEN status = 2 THEN 'Paid'
+                WHEN status = 3 THEN 'Shipped'
+                WHEN status = 4 THEN 'Completed'
+                WHEN status = 5 THEN 'Closed'
+                ELSE 'Unknown'
+            END as statusName,
+            COUNT(*) as count
+        FROM customer_order
+        WHERE is_deleted = 0
+        GROUP BY status
+        ORDER BY status
+    </select>
+
+    <!-- Revenue Trends Query -->
+    <select id="getRevenueByDateRange" resultType="com.intelijake.mall.statistics.pojo.dto.DailyRevenueVO">
+        SELECT 
+            DATE(create_time) as date,
+            COALESCE(SUM(payment_amount), 0) as revenue
+        FROM customer_order
+        WHERE create_time BETWEEN #{startDate} AND #{endDate}
+          AND status = 4          <!-- Only completed orders -->
+          AND is_deleted = 0
+        GROUP BY DATE(create_time)
+        ORDER BY date
+    </select>
+
+    <!-- Payment Method Distribution Query -->
+    <select id="getPaymentMethodStats" resultType="com.intelijake.mall.statistics.pojo.dto.PaymentMethodCountVO">
+        SELECT 
+            payment_type as paymentType,
+            CASE 
+                WHEN payment_type = 1 THEN 'Stripe'
+                WHEN payment_type = 2 THEN 'PayPal'
+                WHEN payment_type = 3 THEN 'Credit Card'
+                WHEN payment_type = 4 THEN 'Cash on Delivery'
+                ELSE 'Unknown'
+            END as paymentTypeName,
+            COUNT(*) as count
+        FROM customer_order
+        WHERE is_deleted = 0
+          AND status = 4          <!-- Only completed orders -->
+        GROUP BY payment_type
+        ORDER BY count DESC
+    </select>
+
+    <!-- Category Product Count Query -->
+    <select id="getCategoryProductCount" resultType="com.intelijake.mall.statistics.pojo.dto.CategoryCountVO">
+        SELECT 
+            pc.id as categoryId,
+            pc.name as categoryName,
+            COUNT(p.id) as productCount
+        FROM product_category pc
+        LEFT JOIN product p ON pc.id = p.category_id AND p.status = 1 AND p.is_deleted = 0
+        WHERE pc.status = 1
+          AND pc.is_deleted = 0
+        GROUP BY pc.id, pc.name
+        HAVING COUNT(p.id) > 0
+        ORDER BY productCount DESC
+    </select>
+
+    <!-- Top Selling Products Query -->
+    <select id="getTopSellingProducts" resultType="com.intelijake.mall.statistics.pojo.vo.TopProductVO">
+        SELECT 
+            oi.product_id as productId,
+            MAX(oi.product_name) as productName,
+            SUM(oi.quantity) as totalQuantity,
+            SUM(oi.total_price) as totalRevenue
+        FROM order_item oi
+        JOIN customer_order co ON oi.order_no = co.order_no
+        WHERE co.status = 4          <!-- Only completed orders -->
+          AND co.is_deleted = 0
+          AND oi.is_deleted = 0
+        GROUP BY oi.product_id
+        HAVING SUM(oi.quantity) > 0          <!-- Ensure we only include products with sales -->
+        ORDER BY totalQuantity DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- Sales by Category Query -->
+    <select id="getSalesByCategory" resultType="com.intelijake.mall.statistics.pojo.dto.CategorySalesVO">
+        SELECT 
+            pc.id as categoryId,
+            pc.name as categoryName,
+            COALESCE(SUM(oi.total_price), 0) as totalSales
+        FROM product_category pc
+        LEFT JOIN product p ON pc.id = p.category_id AND p.is_deleted = 0
+        LEFT JOIN order_item oi ON p.id = oi.product_id AND oi.is_deleted = 0
+        LEFT JOIN customer_order co ON oi.order_no = co.order_no AND co.status = 4 AND co.is_deleted = 0
+        WHERE pc.is_deleted = 0
+          AND pc.status = 1
+        GROUP BY pc.id, pc.name
+        HAVING COALESCE(SUM(oi.total_price), 0) > 0          <!-- Use COALESCE to handle NULL values -->
+        ORDER BY totalSales DESC
+    </select>
+
+    <!-- Monthly Revenue Query -->
+    <select id="getMonthlyRevenue" resultType="com.intelijake.mall.statistics.pojo.dto.MonthlyRevenueVO">
+        SELECT 
+            #{year} as year,
+            MONTH(create_time) as month,
+            COALESCE(SUM(payment_amount), 0) as revenue
+        FROM customer_order
+        WHERE YEAR(create_time) = #{year}
+          AND status = 4          <!-- Only completed orders -->
+          AND is_deleted = 0
+        GROUP BY MONTH(create_time)
+        ORDER BY month
+    </select>
+
+    <!-- Customer Registration Trends Query -->
+    <select id="getCustomerRegistrationsByDateRange" resultType="com.intelijake.mall.statistics.pojo.dto.DailyRegistrationVO">
+        SELECT 
+            DATE(create_time) as date,
+            COUNT(*) as registrationCount
+        FROM customer
+        WHERE create_time BETWEEN #{startDate} AND #{endDate}
+          AND is_deleted = 0
+        GROUP BY DATE(create_time)
+        ORDER BY date
+    </select>
+
+</mapper>
