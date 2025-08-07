@@ -1,0 +1,83 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+
+### custom###
+application-local.yml
+application-pro.yml
+.kiro/
+
+### Security - Sensitive files ###
+# Environment files with credentials
+.env.local
+.env.production.local
+**/application-prod.yml.backup
+**/application-local.yml
+# Credential files
+credentials.json
+secrets.yml
+*.key
+*.pem
+*.p12
+*.jks
+
+### Temporary and deployment files ###
+*.sh
+*.backup
+*.tmp
+*.temp
+*.log
+.DS_Store
+deployment-*.txt
+heroku-configs/
+production-configs/
+src/
+test-*.html
+test-*.js
+*-guide.md
+*-troubleshooting.md
+*-deployment*.md
+*-automation*.md
+*-integration*.md
+setup-*.md
+slides*.md
+project*.md
+
+### Personal Information ###
+# Files containing personal data
+**/personal-info.md
+**/student-details.txt
+
+
+
