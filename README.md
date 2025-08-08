@@ -161,6 +161,7 @@ npm run dev
 
 - **Customer UI:** [Live Demo](https://vape-mall-customer.vercel.app)
 - **Admin UI:** [Admin Panel](https://vape-mall-admin.vercel.app)
+- (use testadmin:testpassword for Admin UI)
 
 ## 📚 Documentation
 
